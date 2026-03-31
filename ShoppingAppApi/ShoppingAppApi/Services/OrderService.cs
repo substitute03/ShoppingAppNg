@@ -11,7 +11,7 @@ public class OrderService(
 {
     public Order CreateOrder(CreateOrderRequest request)
     {
-        Order existingOrder = orderRepository
+        Order? existingOrder = orderRepository
             .GetByIdempotencyToken(request.IdempotencyToken);
 
         if (existingOrder != null)
@@ -19,32 +19,9 @@ public class OrderService(
             throw new InvalidOperationException("Order already exists");
         }
 
-        var orderItems = request.Items.Select(item =>
-        {
-            Product? product =
-            productRepository.GetById(item.ProductId);
+        Order orderToSave = MapCreateOrderRequestToOrder(request);
 
-            if (product == null)
-            {
-                throw new InvalidOperationException($"Product '{item.ProductId}' was not found.");
-            }
-
-            return new OrderItem
-            {
-                ProductId = item.ProductId,
-                Quantity = item.Quantity,
-                UnitPrice = product.Price
-            };
-        })
-        .ToList();
-
-        var order = new Order
-        {
-            Items = orderItems,
-            PaymentSucceeded = !request.ForcePaymentFailure
-        };
-
-        return orderRepository.Add(order);
+        return orderRepository.Add(orderToSave);
     }
 
     public Order? GetOrderById(int id)
@@ -52,14 +29,16 @@ public class OrderService(
         return orderRepository.GetById(id);
     }
 
-    private Order MapCreateOrderRequestToOrder(CreateOrderRequest request){
+    private Order MapCreateOrderRequestToOrder(CreateOrderRequest request)
+    {
         var order = new Order
         {
             Items = request.Items.Select(item => new OrderItem
             {
                 ProductId = item.ProductId,
                 Quantity = item.Quantity,
-                UnitPrice = item.Price
+                UnitPrice = productRepository.GetById(item.ProductId)?.Price ??
+                    throw new InvalidOperationException("Product not found")
             }).ToList(),
             PaymentSucceeded = !request.ForcePaymentFailure
         };
