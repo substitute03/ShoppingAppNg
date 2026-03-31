@@ -27,8 +27,10 @@ public class OrderController(IOrderService orderService) : ControllerBase
         {
             Order order = orderService.CreateOrder(request);
 
-            return CreatedAtAction(nameof(GetOrderById),
-                new { id = order.Id }, order);
+            return CreatedAtAction(
+                actionName: nameof(GetOrderById),
+                routeValues: new { id = order.Id },
+                value: order);
         }
         catch (InvalidOperationException ex)
         {
@@ -36,7 +38,7 @@ public class OrderController(IOrderService orderService) : ControllerBase
         }
     }
 
-    [HttpGet]
+    [HttpGet("{id:int}")]
     public ActionResult<Order> GetOrderById(int id)
     {
         Order? order = orderService.GetOrderById(id);

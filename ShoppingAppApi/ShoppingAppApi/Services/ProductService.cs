@@ -1,6 +1,6 @@
-using ShoppingAppApi.DataTransferObjects;
 using ShoppingAppApi.Models;
 using ShoppingAppApi.Repositories;
+using ShoppingAppApi.Requests;
 
 namespace ShoppingAppApi.Services;
 
@@ -16,15 +16,24 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         return productRepository.GetById(id);
     }
 
-    public Product CreateProduct(ProductDto request)
+    public Product CreateProduct(CreateProductRequest request)
     {
-        var product = new Product
+        Product? existingProduct = productRepository
+            .GetByIdempotencyToken(request.IdempotencyToken);
+
+        if (existingProduct != null)
+        {
+            throw new InvalidOperationException("Product already exists");
+        }
+
+        var productToSave = new Product
         {
             Name = request.Name.Trim(),
-            Price = request.Price
+            Price = request.Price,
+            IdempotencyToken = request.IdempotencyToken
         };
 
-        return productRepository.Add(product);
+        return productRepository.Add(productToSave);
     }
 
     public bool DeleteProduct(int id)

@@ -7,9 +7,9 @@ public class ProductRepository : IProductRepository
     private static readonly Lock Sync = new();
     private static readonly List<Product> Products =
     [
-      new Product { Name = "Laptop", Price = 1299.99m },
-    new Product { Name = "Headphones", Price = 149.99m },
-    new Product { Name = "Keyboard", Price = 89.99m }
+        new Product { Name = "Laptop", Price = 1299.99m },
+        new Product { Name = "Headphones", Price = 149.99m },
+        new Product { Name = "Keyboard", Price = 89.99m }
     ];
 
     public IReadOnlyList<Product> GetAll()
@@ -25,6 +25,17 @@ public class ProductRepository : IProductRepository
         lock (Sync)
         {
             var product = Products.FirstOrDefault(p => p.Id == id);
+            return product is null ? null : Clone(product);
+        }
+    }
+
+    public Product? GetByIdempotencyToken(Guid idempotencyToken)
+    {
+        lock (Sync)
+        {
+            var product = Products.FirstOrDefault(p =>
+                p.IdempotencyToken == idempotencyToken);
+
             return product is null ? null : Clone(product);
         }
     }
@@ -52,6 +63,7 @@ public class ProductRepository : IProductRepository
       {
           Id = product.Id,
           Name = product.Name,
-          Price = product.Price
+          Price = product.Price,
+          IdempotencyToken = product.IdempotencyToken
       };
 }

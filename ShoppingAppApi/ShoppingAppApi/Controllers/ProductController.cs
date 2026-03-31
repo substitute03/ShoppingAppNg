@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ShoppingAppApi.DataTransferObjects;
+using ShoppingAppApi.Requests;
 using ShoppingAppApi.Services;
 
 namespace ShoppingAppApi.Controllers;
@@ -14,7 +15,7 @@ public class ProductController(IProductService productService) : ControllerBase
         return Ok(productService.GetProducts());
     }
 
-    [HttpGet]
+    [HttpGet("{id:int}")]
     public IActionResult GetProductById(int id)
     {
         var product = productService.GetProductById(id);
@@ -22,7 +23,7 @@ public class ProductController(IProductService productService) : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<ProductDto> CreateProduct([FromBody] ProductDto request)
+    public ActionResult<ProductDto> CreateProduct([FromBody] CreateProductRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Name))
         {
@@ -34,11 +35,22 @@ public class ProductController(IProductService productService) : ControllerBase
             return BadRequest("Product price must be greater than zero.");
         }
 
-        var createdProduct = productService.CreateProduct(request);
-        return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.Id }, createdProduct);
+        try
+        {
+            var createdProduct = productService.CreateProduct(request);
+
+            return CreatedAtAction(
+                actionName: nameof(GetProductById),
+                routeValues: new { id = createdProduct.Id },
+                value: createdProduct);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
-    [HttpDelete]
+    [HttpDelete("{id:int}")]
     public IActionResult DeleteProduct(int id)
     {
         return productService.DeleteProduct(id) ? NoContent() : NotFound();
