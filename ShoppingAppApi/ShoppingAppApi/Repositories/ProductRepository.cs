@@ -5,15 +5,18 @@ namespace ShoppingAppApi.Repositories;
 
 public class ProductRepository : IProductRepository
 {
-    private static readonly ConcurrentDictionary<int, Product> Products = new();
-    private static readonly ConcurrentDictionary<Guid, int> ProductIdByIdempotencyToken = new();
-    private int _nextProductId = Products.Keys.Max() + 1;
+    private static readonly Guid LaptopId = Guid.Parse("a0000000-0000-4000-8000-000000000001");
+    private static readonly Guid HeadphonesId = Guid.Parse("a0000000-0000-4000-8000-000000000002");
+    private static readonly Guid KeyboardId = Guid.Parse("a0000000-0000-4000-8000-000000000003");
+
+    private static readonly ConcurrentDictionary<Guid, Product> Products = new();
+    private static readonly ConcurrentDictionary<Guid, Guid> ProductIdByIdempotencyToken = new();
 
     static ProductRepository()
     {
-        Products[1] = new Product { Id = 1, Name = "Laptop", Price = 1299.99m };
-        Products[2] = new Product { Id = 2, Name = "Headphones", Price = 149.99m };
-        Products[3] = new Product { Id = 3, Name = "Keyboard", Price = 49.99m };
+        Products[LaptopId] = new Product { Id = LaptopId, Name = "Laptop", Price = 1299.99m };
+        Products[HeadphonesId] = new Product { Id = HeadphonesId, Name = "Headphones", Price = 149.99m };
+        Products[KeyboardId] = new Product { Id = KeyboardId, Name = "Keyboard", Price = 49.99m };
     }
 
     public IReadOnlyList<Product> GetAll()
@@ -21,10 +24,9 @@ public class ProductRepository : IProductRepository
         return Products.Values.ToList();
     }
 
-    public Product? GetById(int id)
+    public Product? GetById(Guid id)
     {
-        Products.TryGetValue(id, out var product);
-        return product;
+        return Products.TryGetValue(id, out var product) ? product : null;
     }
 
     public Product? GetByIdempotencyToken(Guid idempotencyToken)
@@ -34,26 +36,18 @@ public class ProductRepository : IProductRepository
             return null;
         }
 
-        int productId = ProductIdByIdempotencyToken
-            .GetValueOrDefault(idempotencyToken, -1);
-
-        if (productId == -1)
+        if (!ProductIdByIdempotencyToken.TryGetValue(idempotencyToken, out var productId))
         {
             return null;
         }
 
-        if (!Products.TryGetValue(productId, out var product))
-        {
-            return null;
-        }
-
-        return product;
+        return Products.TryGetValue(productId, out var product) ? product : null;
     }
 
     public Product Add(Product product)
     {
-        bool isDuplicateProduct = 
-            Products.ContainsKey(product.Id) ||
+        bool isDuplicateProduct =
+            (product.Id != Guid.Empty && Products.ContainsKey(product.Id)) ||
             (product.IdempotencyToken != Guid.Empty &&
              ProductIdByIdempotencyToken.ContainsKey(product.IdempotencyToken));
 
@@ -62,22 +56,26 @@ public class ProductRepository : IProductRepository
             throw new InvalidOperationException("Product already exists");
         }
 
+        var newId = Guid.NewGuid();
         var productToSave = new Product
         {
-            Id = _nextProductId,
-            Name = product.Name,    
+            Id = newId,
+            Name = product.Name,
             Price = product.Price,
             IdempotencyToken = product.IdempotencyToken
         };
 
-        // "Save" the product
-        Products[_nextProductId] = productToSave;
-        ProductIdByIdempotencyToken[product.IdempotencyToken] = _nextProductId;
+        Products[newId] = productToSave;
+
+        if (product.IdempotencyToken != Guid.Empty)
+        {
+            ProductIdByIdempotencyToken[product.IdempotencyToken] = newId;
+        }
 
         return productToSave;
     }
 
-    public bool Delete(int id)
+    public bool Delete(Guid id)
     {
         if (!Products.TryRemove(id, out var product))
         {

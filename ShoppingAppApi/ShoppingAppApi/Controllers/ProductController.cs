@@ -15,8 +15,8 @@ public class ProductController(IProductService productService) : ControllerBase
         return Ok(productService.GetProducts());
     }
 
-    [HttpGet("{id:int}")]
-    public IActionResult GetProductById(int id)
+    [HttpGet("{id:guid}")]
+    public IActionResult GetProductById(Guid id)
     {
         var product = productService.GetProductById(id);
         return product is null ? NotFound() : Ok(product);
@@ -50,8 +50,8 @@ public class ProductController(IProductService productService) : ControllerBase
         }
     }
 
-    [HttpDelete("{id:int}")]
-    public IActionResult DeleteProduct(int id)
+    [HttpDelete("{id:guid}")]
+    public IActionResult DeleteProduct(Guid id)
     {
         return productService.DeleteProduct(id) ? NoContent() : NotFound();
     }

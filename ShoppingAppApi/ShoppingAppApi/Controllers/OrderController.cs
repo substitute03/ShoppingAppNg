@@ -38,8 +38,8 @@ public class OrderController(IOrderService orderService) : ControllerBase
         }
     }
 
-    [HttpGet("{id:int}")]
-    public ActionResult<Order> GetOrderById(int id)
+    [HttpGet("{id:guid}")]
+    public ActionResult<Order> GetOrderById(Guid id)
     {
         Order? order = orderService.GetOrderById(id);
         return order is null ? NotFound() : Ok(order);

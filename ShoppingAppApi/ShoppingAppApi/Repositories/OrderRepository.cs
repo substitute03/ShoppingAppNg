@@ -5,14 +5,13 @@ namespace ShoppingAppApi.Repositories;
 
 public class OrderRepository : IOrderRepository
 {
-    private static readonly ConcurrentDictionary<int, Order> OrdersById = new();
-    private static readonly ConcurrentDictionary<Guid, int> OrderIdByIdempotencyToken = new();
-    private int _nextOrderId = OrdersById.Keys.Max() + 1;
+    private static readonly ConcurrentDictionary<Guid, Order> OrdersById = new();
+    private static readonly ConcurrentDictionary<Guid, Guid> OrderIdByIdempotencyToken = new();
 
     public Order Add(Order order)
     {
         bool isDuplicateOrder =
-            OrdersById.ContainsKey(order.Id) ||
+            (order.Id != Guid.Empty && OrdersById.ContainsKey(order.Id)) ||
             (order.IdempotencyToken != Guid.Empty &&
              OrderIdByIdempotencyToken.ContainsKey(order.IdempotencyToken));
 
@@ -21,9 +20,10 @@ public class OrderRepository : IOrderRepository
             throw new InvalidOperationException("Order already exists");
         }
 
+        var newId = Guid.NewGuid();
         var orderToSave = new Order
         {
-            Id = _nextOrderId,
+            Id = newId,
             CreatedAtUtc = order.CreatedAtUtc,
             PaymentSucceeded = order.PaymentSucceeded,
             IdempotencyToken = order.IdempotencyToken,
@@ -35,17 +35,19 @@ public class OrderRepository : IOrderRepository
             }).ToList()
         };
 
-        // "Save" the order
-        OrdersById[_nextOrderId] = orderToSave;
-        OrderIdByIdempotencyToken[order.IdempotencyToken] = _nextOrderId;
+        OrdersById[newId] = orderToSave;
+
+        if (order.IdempotencyToken != Guid.Empty)
+        {
+            OrderIdByIdempotencyToken[order.IdempotencyToken] = newId;
+        }
 
         return orderToSave;
     }
 
-    public Order? GetById(int id)
+    public Order? GetById(Guid id)
     {
-        OrdersById.TryGetValue(id, out var order);
-        return order;
+        return OrdersById.TryGetValue(id, out var order) ? order : null;
     }
 
     public Order? GetByIdempotencyToken(Guid idempotencyToken)
@@ -54,20 +56,12 @@ public class OrderRepository : IOrderRepository
         {
             return null;
         }
-        
-        int orderId = OrderIdByIdempotencyToken
-            .GetValueOrDefault(idempotencyToken, -1);
 
-        if (orderId == -1)
+        if (!OrderIdByIdempotencyToken.TryGetValue(idempotencyToken, out var orderId))
         {
             return null;
         }
 
-        if (!OrdersById.TryGetValue(orderId, out var order))
-        {
-            return null;
-        }
-
-        return order;      
+        return OrdersById.TryGetValue(orderId, out var order) ? order : null;
     }
 }

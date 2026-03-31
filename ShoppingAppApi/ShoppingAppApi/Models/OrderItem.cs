@@ -2,7 +2,7 @@ namespace ShoppingAppApi.Models;
 
 public class OrderItem
 {
-    public int ProductId { get; init; }
+    public Guid ProductId { get; init; }
     public int Quantity { get; init; }
     public decimal UnitPrice { get; init; }
 }

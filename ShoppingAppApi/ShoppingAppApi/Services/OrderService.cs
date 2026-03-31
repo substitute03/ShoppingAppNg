@@ -24,7 +24,7 @@ public class OrderService(
         return orderRepository.Add(orderToSave);
     }
 
-    public Order? GetOrderById(int id)
+    public Order? GetOrderById(Guid id)
     {
         return orderRepository.GetById(id);
     }
