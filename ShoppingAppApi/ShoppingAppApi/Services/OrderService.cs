@@ -40,7 +40,8 @@ public class OrderService(
                 UnitPrice = productRepository.GetById(item.ProductId)?.Price ??
                     throw new InvalidOperationException("Product not found")
             }).ToList(),
-            PaymentSucceeded = !request.ForcePaymentFailure
+            PaymentSucceeded = !request.ForcePaymentFailure,
+            IdempotencyToken = request.IdempotencyToken
         };
         
         return order;

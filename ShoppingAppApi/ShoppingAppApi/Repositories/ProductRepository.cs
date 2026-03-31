@@ -1,69 +1,102 @@
+using System.Collections.Concurrent;
 using ShoppingAppApi.Models;
 
 namespace ShoppingAppApi.Repositories;
 
 public class ProductRepository : IProductRepository
 {
-    private static readonly Lock Sync = new();
-    private static readonly List<Product> Products =
-    [
-        new Product { Name = "Laptop", Price = 1299.99m },
-        new Product { Name = "Headphones", Price = 149.99m },
-        new Product { Name = "Keyboard", Price = 49.99m }
-    ];
+    private static readonly ConcurrentDictionary<int, Product> Products = new();
+    private static readonly ConcurrentDictionary<Guid, int> ProductIdByIdempotencyToken = new();
+    private int _nextProductId = Products.Keys.Max() + 1;
+
+    static ProductRepository()
+    {
+        Products[1] = new Product { Id = 1, Name = "Laptop", Price = 1299.99m };
+        Products[2] = new Product { Id = 2, Name = "Headphones", Price = 149.99m };
+        Products[3] = new Product { Id = 3, Name = "Keyboard", Price = 49.99m };
+    }
 
     public IReadOnlyList<Product> GetAll()
     {
-        lock (Sync)
-        {
-            return Products.Select(Clone).ToList();
-        }
+        return Products.Values.Select(Clone).ToList();
     }
 
     public Product? GetById(int id)
     {
-        lock (Sync)
-        {
-            var product = Products.FirstOrDefault(p => p.Id == id);
-            return product is null ? null : Clone(product);
-        }
+        return Products.TryGetValue(id, out var product) ? Clone(product) : null;
     }
 
     public Product? GetByIdempotencyToken(Guid idempotencyToken)
     {
-        lock (Sync)
+        if (idempotencyToken == Guid.Empty)
         {
-            var product = Products.FirstOrDefault(p =>
-                p.IdempotencyToken == idempotencyToken);
-
-            return product is null ? null : Clone(product);
+            return null;
         }
+
+        int productId = ProductIdByIdempotencyToken
+            .GetValueOrDefault(idempotencyToken, -1);
+
+        if (productId == -1)
+        {
+            return null;
+        }
+
+        if (!Products.TryGetValue(productId, out var product))
+        {
+            return null;
+        }
+
+        return Clone(product);
     }
 
     public Product Add(Product product)
     {
-        lock (Sync)
+        bool isDuplicateProduct = 
+            Products.ContainsKey(product.Id) ||
+            (product.IdempotencyToken != Guid.Empty &&
+             ProductIdByIdempotencyToken.ContainsKey(product.IdempotencyToken));
+
+        if (isDuplicateProduct)
         {
-            var toStore = Clone(product);
-            Products.Add(toStore);
-            return Clone(toStore);
+            throw new InvalidOperationException("Product already exists");
         }
+
+        var productToSave = new Product
+        {
+            Id = _nextProductId,
+            Name = product.Name,
+            Price = product.Price,
+            IdempotencyToken = product.IdempotencyToken
+        };
+
+        // "Save" the product
+        Products[_nextProductId] = productToSave;
+        ProductIdByIdempotencyToken[product.IdempotencyToken] = _nextProductId;
+
+        return Clone(productToSave);
     }
 
     public bool Delete(int id)
     {
-        lock (Sync)
+        if (!Products.TryRemove(id, out var product))
         {
-            return Products.RemoveAll(p => p.Id == id) > 0;
+            return false;
         }
+
+        if (product.IdempotencyToken != Guid.Empty)
+        {
+            ProductIdByIdempotencyToken.TryRemove(product.IdempotencyToken, out _);
+        }
+
+        return true;
     }
 
     private static Product Clone(Product product) =>
-      new()
-      {
-          Id = product.Id,
-          Name = product.Name,
-          Price = product.Price,
-          IdempotencyToken = product.IdempotencyToken
-      };
+        new()
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Price = product.Price,
+            IdempotencyToken = product.IdempotencyToken
+        };
 }
