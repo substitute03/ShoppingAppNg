@@ -18,12 +18,13 @@ public class ProductRepository : IProductRepository
 
     public IReadOnlyList<Product> GetAll()
     {
-        return Products.Values.Select(Clone).ToList();
+        return Products.Values.ToList();
     }
 
     public Product? GetById(int id)
     {
-        return Products.TryGetValue(id, out var product) ? Clone(product) : null;
+        Products.TryGetValue(id, out var product);
+        return product;
     }
 
     public Product? GetByIdempotencyToken(Guid idempotencyToken)
@@ -46,7 +47,7 @@ public class ProductRepository : IProductRepository
             return null;
         }
 
-        return Clone(product);
+        return product;
     }
 
     public Product Add(Product product)
@@ -64,7 +65,7 @@ public class ProductRepository : IProductRepository
         var productToSave = new Product
         {
             Id = _nextProductId,
-            Name = product.Name,
+            Name = product.Name,    
             Price = product.Price,
             IdempotencyToken = product.IdempotencyToken
         };
@@ -73,7 +74,7 @@ public class ProductRepository : IProductRepository
         Products[_nextProductId] = productToSave;
         ProductIdByIdempotencyToken[product.IdempotencyToken] = _nextProductId;
 
-        return Clone(productToSave);
+        return productToSave;
     }
 
     public bool Delete(int id)
@@ -90,14 +91,4 @@ public class ProductRepository : IProductRepository
 
         return true;
     }
-
-    // Clone the product to avoid returning the same reference as we are using in-memory collections
-    private static Product Clone(Product product) =>
-        new()
-        {
-            Id = product.Id,
-            Name = product.Name,
-            Price = product.Price,
-            IdempotencyToken = product.IdempotencyToken
-        };
 }

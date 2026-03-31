@@ -39,12 +39,13 @@ public class OrderRepository : IOrderRepository
         OrdersById[_nextOrderId] = orderToSave;
         OrderIdByIdempotencyToken[order.IdempotencyToken] = _nextOrderId;
 
-        return Clone(orderToSave);
+        return orderToSave;
     }
 
     public Order? GetById(int id)
     {
-        return OrdersById.TryGetValue(id, out var order) ? Clone(order) : null;
+        OrdersById.TryGetValue(id, out var order);
+        return order;
     }
 
     public Order? GetByIdempotencyToken(Guid idempotencyToken)
@@ -53,28 +54,20 @@ public class OrderRepository : IOrderRepository
         {
             return null;
         }
+        
+        int orderId = OrderIdByIdempotencyToken
+            .GetValueOrDefault(idempotencyToken, -1);
 
-        return OrderIdByIdempotencyToken.TryGetValue(idempotencyToken, out var id) &&
-               OrdersById.TryGetValue(id, out var order)
-            ? Clone(order)
-            : null;
-    }
-
-    // Clone the order to avoid returning the same reference as we are using in-memory collections
-    private static Order Clone(Order order)
-    {
-        return new Order
+        if (orderId == -1)
         {
-            Id = order.Id,
-            CreatedAtUtc = order.CreatedAtUtc,
-            PaymentSucceeded = order.PaymentSucceeded,
-            IdempotencyToken = order.IdempotencyToken,
-            Items = order.Items.Select(i => new OrderItem
-            {
-                ProductId = i.ProductId,
-                Quantity = i.Quantity,
-                UnitPrice = i.UnitPrice
-            }).ToList()
-        };
+            return null;
+        }
+
+        if (!OrdersById.TryGetValue(orderId, out var order))
+        {
+            return null;
+        }
+
+        return order;      
     }
 }

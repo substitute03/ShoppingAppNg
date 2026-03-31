@@ -1,0 +1,2 @@
+In addition to checking ProductIds and OrderIds, I am using idempotency tokens from the client to prevent duplicates being created.
+Would normally just flag orders and products as IsDeleted = true in the database, but we are just adding and removing from a dictionary in this instance.
