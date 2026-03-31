@@ -91,6 +91,7 @@ public class ProductRepository : IProductRepository
         return true;
     }
 
+    // Clone the product to avoid returning the same reference as we are using in-memory collections
     private static Product Clone(Product product) =>
         new()
         {

@@ -60,6 +60,7 @@ public class OrderRepository : IOrderRepository
             : null;
     }
 
+    // Clone the order to avoid returning the same reference as we are using in-memory collections
     private static Order Clone(Order order)
     {
         return new Order
