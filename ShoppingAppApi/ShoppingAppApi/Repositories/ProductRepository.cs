@@ -20,7 +20,7 @@ public class ProductRepository : IProductRepository
         }
     }
 
-    public Product? GetById(Guid id)
+    public Product? GetById(int id)
     {
         lock (Sync)
         {
@@ -39,7 +39,7 @@ public class ProductRepository : IProductRepository
         }
     }
 
-    public bool Delete(Guid id)
+    public bool Delete(int id)
     {
         lock (Sync)
         {

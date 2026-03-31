@@ -11,7 +11,7 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         return productRepository.GetAll();
     }
 
-    public Product? GetProductById(Guid id)
+    public Product? GetProductById(int id)
     {
         return productRepository.GetById(id);
     }
@@ -27,7 +27,7 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         return productRepository.Add(product);
     }
 
-    public bool DeleteProduct(Guid id)
+    public bool DeleteProduct(int id)
     {
         return productRepository.Delete(id);
     }

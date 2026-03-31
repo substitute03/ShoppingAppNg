@@ -11,13 +11,17 @@ public class OrderRepository : IOrderRepository
     {
         lock (Sync)
         {
-            var toStore = Clone(order);
-            Orders.Add(toStore);
-            return Clone(toStore);
+            if (Orders.Any(o => o.IdempotencyToken == order.IdempotencyToken))
+            {
+                return order;
+            }
+
+            Orders.Add(order);
+            return Clone(order);
         }
     }
 
-    public Order? GetById(Guid id)
+    public Order? GetById(int id)
     {
         lock (Sync)
         {
@@ -26,19 +30,30 @@ public class OrderRepository : IOrderRepository
         }
     }
 
-    private static Order Clone(Order order) =>
-      new()
-      {
-          Id = order.Id,
-          CreatedAtUtc = order.CreatedAtUtc,
-          PaymentSucceeded = order.PaymentSucceeded,
-          Items = order.Items
-          .Select(i => new OrderItem
-          {
-              ProductId = i.ProductId,
-              Quantity = i.Quantity,
-              UnitPrice = i.UnitPrice
-          })
-          .ToList()
-      };
+    public Order? GetByIdempotencyToken(Guid idempotencyToken)
+    {
+        lock (Sync)
+        {
+            var order = Orders.FirstOrDefault(o =>
+                o.IdempotencyToken == idempotencyToken);
+
+            return order is null ? null : Clone(order);
+        }
+    }
+
+    private static Order Clone(Order order)
+    {
+        return new Order
+        {
+            Id = order.Id,
+            CreatedAtUtc = order.CreatedAtUtc,
+            PaymentSucceeded = order.PaymentSucceeded,
+            Items = order.Items.Select(i => new OrderItem
+            {
+                ProductId = i.ProductId,
+                Quantity = i.Quantity,
+                UnitPrice = i.UnitPrice
+            }).ToList()
+        };
+    }
 }

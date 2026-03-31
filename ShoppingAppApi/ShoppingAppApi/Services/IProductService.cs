@@ -6,7 +6,7 @@ namespace ShoppingAppApi.Services;
 public interface IProductService
 {
     IReadOnlyList<Product> GetProducts();
-    Product? GetProductById(Guid id);
+    Product? GetProductById(int id);
     Product CreateProduct(ProductDto request);
-    bool DeleteProduct(Guid id);
+    bool DeleteProduct(int id);
 }

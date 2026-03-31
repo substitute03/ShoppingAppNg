@@ -2,7 +2,7 @@ namespace ShoppingAppApi.Models;
 
 public class Product
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
+    public int Id { get; init; } = 0;
     public string Name { get; set; } = string.Empty;
     public decimal Price { get; set; }
 }

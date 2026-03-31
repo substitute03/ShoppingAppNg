@@ -5,7 +5,7 @@ namespace ShoppingAppApi.Repositories;
 public interface IProductRepository
 {
     IReadOnlyList<Product> GetAll();
-    Product? GetById(Guid id);
+    Product? GetById(int id);
     Product Add(Product product);
-    bool Delete(Guid id);
+    bool Delete(int id);
 }

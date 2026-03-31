@@ -37,7 +37,7 @@ public class OrderController(IOrderService orderService) : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<Order> GetOrderById(Guid id)
+    public ActionResult<Order> GetOrderById(int id)
     {
         Order? order = orderService.GetOrderById(id);
         return order is null ? NotFound() : Ok(order);

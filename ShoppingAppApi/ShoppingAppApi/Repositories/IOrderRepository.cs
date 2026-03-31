@@ -5,5 +5,6 @@ namespace ShoppingAppApi.Repositories;
 public interface IOrderRepository
 {
     Order Add(Order order);
-    Order? GetById(Guid id);
+    Order? GetById(int id);
+    Order? GetByIdempotencyToken(Guid idempotencyToken);
 }

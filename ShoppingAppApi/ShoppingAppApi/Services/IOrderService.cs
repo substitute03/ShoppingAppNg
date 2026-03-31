@@ -6,5 +6,5 @@ namespace ShoppingAppApi.Services;
 public interface IOrderService
 {
     Order CreateOrder(CreateOrderRequest request);
-    Order? GetOrderById(Guid id);
+    Order? GetOrderById(int id);
 }
