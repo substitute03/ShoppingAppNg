@@ -9,7 +9,7 @@ public class ProductRepository : IProductRepository
     [
         new Product { Name = "Laptop", Price = 1299.99m },
         new Product { Name = "Headphones", Price = 149.99m },
-        new Product { Name = "Keyboard", Price = 89.99m }
+        new Product { Name = "Keyboard", Price = 49.99m }
     ];
 
     public IReadOnlyList<Product> GetAll()
