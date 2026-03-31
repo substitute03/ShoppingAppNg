@@ -1,7 +1,7 @@
-namespace ShoppingAppApi.Contracts;
+namespace ShoppingAppApi.DataTransferObjects;
 
-public class CreateOrderItemRequest
+public class OrderDto
 {
-  public Guid ProductId { get; init; }
-  public int Quantity { get; init; }
+    public Guid ProductId { get; init; }
+    public int Quantity { get; init; }
 }

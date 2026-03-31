@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using ShoppingAppApi.Contracts;
+using ShoppingAppApi.DataTransferObjects;
 using ShoppingAppApi.Services;
 
 namespace ShoppingAppApi.Controllers;
@@ -38,7 +38,7 @@ public class ProductController(IProductService productService) : ControllerBase
         return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.Id }, createdProduct);
     }
 
-    [HttpDelete("{id:guid}")]
+    [HttpDelete]
     public IActionResult DeleteProduct(Guid id)
     {
         return productService.DeleteProduct(id) ? NoContent() : NotFound();

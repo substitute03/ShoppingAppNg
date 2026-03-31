@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using ShoppingAppApi.Contracts;
+using ShoppingAppApi.DataTransferObjects;
 using ShoppingAppApi.Models;
+using ShoppingAppApi.Requests;
 using ShoppingAppApi.Services;
 
 namespace ShoppingAppApi.Controllers;
@@ -10,7 +11,7 @@ namespace ShoppingAppApi.Controllers;
 public class OrderController(IOrderService orderService) : ControllerBase
 {
     [HttpPost]
-    public ActionResult<Order> CreateOrder([FromBody] CreateOrderRequest request)
+    public ActionResult<OrderDto> CreateOrder([FromBody] CreateOrderRequest request)
     {
         if (request.Items.Count == 0)
         {
