@@ -2,7 +2,7 @@ using ShoppingAppApi.Models;
 
 namespace ShoppingAppApi.Repositories;
 
-public class InMemoryOrderRepository : IOrderRepository
+public class OrderRepository : IOrderRepository
 {
     private static readonly Lock Sync = new();
     private static readonly List<Order> Orders = [];
