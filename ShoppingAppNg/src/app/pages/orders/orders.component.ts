@@ -17,6 +17,7 @@ export class OrdersComponent implements OnInit {
   readonly isCreating = signal(false);
   readonly isRetrieving = signal(false);
   readonly showIdempotencyResetToast = signal(false);
+  readonly showCopiedOrderToast = signal(false);
   readonly createErrorMessage = signal('');
   readonly retrieveErrorMessage = signal('');
   readonly createdOrder = signal<Order | null>(null);
@@ -117,6 +118,17 @@ export class OrdersComponent implements OnInit {
     this.currentOrderIdempotencyToken.set(crypto.randomUUID());
     this.showIdempotencyResetToast.set(true);
     setTimeout(() => this.showIdempotencyResetToast.set(false), 2500);
+  }
+
+  copyCreatedOrderId(): void {
+    const id = this.createdOrder()?.id;
+    if (!id) {
+      return;
+    }
+    void navigator.clipboard.writeText(id).then(() => {
+      this.showCopiedOrderToast.set(true);
+      setTimeout(() => this.showCopiedOrderToast.set(false), 2500);
+    });
   }
 
   retrieveOrder(): void {

@@ -132,8 +132,17 @@
             <div class="card border mt-4 bg-light">
               <div class="card-body">
                 <h3 class="mb-3">Order created</h3>
-                <p class="mb-1">
-                  <strong>Order number:</strong> {{ createdOrder()!.id }}
+                <p class="mb-1 d-flex flex-wrap align-items-center gap-2">
+                  <strong>Order number:</strong>
+                  <span class="font-monospace text-break">{{ createdOrder()!.id }}</span>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    (click)="copyCreatedOrderId()"
+                    aria-label="Copy order number to clipboard"
+                  >
+                    Copy
+                  </button>
                 </p>
                 <p class="mb-1">
                   <strong>Created:</strong> {{ createdOrder()!.createdAtUtc | date:'short' }}
@@ -246,18 +255,35 @@
     </div>
   </div>
 
-  <div class="toast-container position-fixed top-0 end-0 p-3">
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
     @if (showIdempotencyResetToast()) {
-      <div class="toast show text-bg-success border-0" role="status">
-        <div class="d-flex">
-          <div class="toast-body">
+      <div class="toast show text-bg-success border-0 shadow mb-2" style="min-width: 20rem" role="status">
+        <div class="d-flex align-items-center">
+          <div class="toast-body fs-5 py-3 px-4 mb-0">
             Idempotency token reset.
           </div>
           <button
             type="button"
-            class="btn-close btn-close-white me-2 m-auto"
+            class="btn-close btn-close-white me-3"
+            style="transform: scale(1.25)"
             aria-label="Close"
             (click)="showIdempotencyResetToast.set(false)"
+          ></button>
+        </div>
+      </div>
+    }
+    @if (showCopiedOrderToast()) {
+      <div class="toast show text-bg-success border-0 shadow" style="min-width: 20rem" role="status">
+        <div class="d-flex align-items-center">
+          <div class="toast-body fs-5 py-3 px-4 mb-0">
+            Copied order number to clipboard.
+          </div>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-3"
+            style="transform: scale(1.25)"
+            aria-label="Close"
+            (click)="showCopiedOrderToast.set(false)"
           ></button>
         </div>
       </div>
