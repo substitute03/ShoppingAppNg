@@ -1,5 +1,32 @@
 ShoppingApp Take-Home - Technical Notes
 
+Prerequisites
+- .NET SDK 10.0+
+- Node.js 20+ and npm
+
+API (.NET)
+1. Open a terminal in:
+   ShoppingAppApi/ShoppingAppApi
+2. Run:
+   dotnet restore
+   dotnet run
+3. API will run at:
+   http://localhost:5254
+
+Frontend (Angular)
+1. Open a terminal in:
+   ShoppingAppNg
+2. Run:
+   npm install
+   npm start
+3. Frontend will run at:
+   http://localhost:4200
+
+Notes
+- This demo is configured to run the API over HTTP.
+- The Angular app calls the API at http://localhost:5254.
+- If ports differ locally, update the Angular API service base URLs accordingly.
+
 General Design
 - The solution is separated into a .NET API and an Angular frontend, with clear separation between presentation, business logic, and data access responsibilities.
 - The API follows a controller + service + repository structure to keep concerns isolated and make behavior easier to extend and easier to test by using dependency injection.
