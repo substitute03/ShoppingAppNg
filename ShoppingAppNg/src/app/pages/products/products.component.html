@@ -47,7 +47,7 @@
 
   <div class="card shadow-sm">
     <div class="card-body">
-      <h2 class="h5 mb-3">Product List {{ isLoading().toString() }}</h2>
+      <h2 class="h5 mb-3">Product List</h2>
 
       @if (isLoading()) {
         <p class="text-secondary mb-0">Loading products...</p>
@@ -67,7 +67,7 @@
               @for (product of products(); track product.id) {
                 <tr [class.table-warning]="product.isPending">
                   <td>{{ product.name }}</td>
-                  <td>{{ product.price | currency }}</td>
+                  <td>{{ product.price | currency:'GBP':'symbol':'1.2-2':'en-GB'}}</td>
                   <td class="text-end">
                     <button
                       class="btn btn-sm btn-outline-danger"
