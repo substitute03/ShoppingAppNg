@@ -35,6 +35,8 @@ General Design
 
 Technical Decisions and Justification
 - The API is run over HTTP (not HTTPS) for demo convenience and local development simplicity.
+- A toggle on the home screen is used for flagging the user as an admin for the purpose of simulating authorisation in this demo for simplicity. In a production app this would likely be handled by roles/claimns on a JWT.
+- A toggle on the order page is used for mocking the payment flow and triggering a successful or failed payment.
 - Angular Signals are used for UI state updates because Zone.js did not reliably detect state changes in this setup.
 - Product create/delete operations in the UI use optimistic updates for a responsive experience, with rollback if API calls fail.
 - A template-driven form is used for simple product creation, while a reactive form is used for order creation because it is more complex and dynamic.
