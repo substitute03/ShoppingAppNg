@@ -33,7 +33,7 @@
                         <option value="">Select a product</option>
                         @for (product of products(); track product.id) {
                           <option [value]="product.id">
-                            {{ product.name }} ({{ product.price | currency }})
+                            {{ product.name }} ({{ product.price | currency:'GBP':'symbol':'1.2-2':'en-GB' }})
                           </option>
                         }
                       </select>
@@ -146,13 +146,13 @@
       <div class="card-body">
         <h2 class="h5 mb-3">Retrieved Order</h2>
         <p class="mb-1">
-            <strong>Order ID:</strong> {{ createdOrder()!.id }}
+            <strong>Order ID:</strong> {{ retrievedOrder()!.id }}
         </p>
         <p class="mb-1">
-            <strong>Created:</strong> {{ createdOrder()!.createdAtUtc | date:'short' }}
+            <strong>Created:</strong> {{ retrievedOrder()!.createdAtUtc | date:'short' }}
         </p>
         <p class="mb-1">
-            <strong>Order total:</strong> {{ createdOrder()!.items.reduce((total, item) => total + item.unitPrice * item.quantity, 0) | currency:'GBP':'symbol':'1.2-2':'en-GB' }}
+            <strong>Order total:</strong> {{ retrievedOrder()!.items.reduce((total, item) => total + item.unitPrice * item.quantity, 0) | currency:'GBP':'symbol':'1.2-2':'en-GB' }}
         </p>
         <p class="mb-2">
           <strong>Payment:</strong>
