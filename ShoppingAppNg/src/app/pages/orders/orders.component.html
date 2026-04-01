@@ -60,9 +60,13 @@
             <form [formGroup]="createOrderForm" (ngSubmit)="createOrder()">
               <div formArrayName="items" class="vstack gap-2 mb-3">
                 @for (item of orderItemsFormArray.controls; let i = $index; track i) {
-                  <div [formGroupName]="i" class="row g-2 align-items-center">
+                  <div [formGroupName]="i" class="row g-2 align-items-start">
                     <div class="col-md-7">
-                      <select class="form-select" formControlName="productId">
+                      <select
+                        class="form-select"
+                        formControlName="productId"
+                        [class.is-invalid]="isOrderLineFieldInvalid(i, 'productId')"
+                      >
                         <option value="">Select a product</option>
                         @for (product of products(); track product.id) {
                           <option [value]="product.id">
@@ -70,9 +74,21 @@
                           </option>
                         }
                       </select>
+                      @if (isOrderLineFieldInvalid(i, 'productId')) {
+                        <div class="invalid-feedback d-block">Select a product.</div>
+                      }
                     </div>
                     <div class="col-md-3">
-                      <input type="number" min="1" class="form-control" formControlName="quantity" />
+                      <input
+                        type="number"
+                        min="1"
+                        class="form-control"
+                        formControlName="quantity"
+                        [class.is-invalid]="isOrderLineFieldInvalid(i, 'quantity')"
+                      />
+                      @if (isOrderLineFieldInvalid(i, 'quantity')) {
+                        <div class="invalid-feedback d-block">Enter a quantity of at least 1.</div>
+                      }
                     </div>
                     <div class="col-md-2">
                       <button
@@ -174,7 +190,11 @@
                 class="form-control"
                 formControlName="orderId"
                 placeholder="Enter order GUID"
+                [class.is-invalid]="isRetrieveOrderIdInvalid()"
               />
+              @if (isRetrieveOrderIdInvalid()) {
+                <div class="invalid-feedback d-block">Order ID is required.</div>
+              }
             </div>
             <button class="btn btn-outline-primary" type="submit" [disabled]="isRetrieving()">
               {{ isRetrieving() ? 'Retrieving...' : 'Retrieve Order' }}

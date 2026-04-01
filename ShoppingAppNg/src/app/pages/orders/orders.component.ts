@@ -1,6 +1,6 @@
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
-import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Product } from '../../models/product';
 import { CreateOrderRequest, Order } from '../../models/order';
@@ -49,6 +49,17 @@ export class OrdersComponent implements OnInit {
 
   get orderItemsFormArray(): FormArray {
     return this.createOrderForm.controls.items as FormArray;
+  }
+
+  isOrderLineFieldInvalid(lineIndex: number, fieldName: 'productId' | 'quantity'): boolean {
+    const group = this.orderItemsFormArray.at(lineIndex) as FormGroup;
+    const control = group.get(fieldName);
+    return !!control && control.invalid && control.touched;
+  }
+
+  isRetrieveOrderIdInvalid(): boolean {
+    const control = this.retrieveOrderForm.get('orderId');
+    return !!control && control.invalid && control.touched;
   }
 
   addItem(): void {

@@ -47,12 +47,20 @@ export class ProductsComponent implements OnInit {
   addProduct(): void {
     const name = this.newProductName.trim();
 
-    if (!name || this.newProductPrice <= 0) {
-      this.errorMessage.set('Enter a product name and a price greater than zero.');
+    const errorMessages: string[] = [];
+    if (!name) {
+      errorMessages.push('Enter a product name.');
+    }
+    if (this.newProductPrice <= 0) {
+      errorMessages.push('Enter a price greater than zero.');
+    }
+    const errorMessage = errorMessages.join('\n');
+
+    this.errorMessage.set(errorMessage);
+    if (errorMessage) {
       return;
     }
 
-    this.errorMessage.set('');
     this.isSubmitting.set(true);
 
     const tempId = crypto.randomUUID();
