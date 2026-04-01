@@ -1,4 +1,5 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CreateProductRequest, Product } from '../../models/product';
@@ -89,9 +90,13 @@ export class ProductsComponent implements OnInit {
         ));
         this.isSubmitting.set(false);
       },
-      error: () => {
+      error: (err: HttpErrorResponse) => {
         this.products.set(this.products().filter((product) => product.id !== tempId));
-        this.errorMessage.set('Create failed. Product was removed from the list.');
+        this.errorMessage.set(
+          err.status === 403
+            ? 'You are not authorised to add products'
+            : 'Create failed. Product was removed from the list.'
+        );
         this.isSubmitting.set(false);
       }
     });
@@ -102,9 +107,13 @@ export class ProductsComponent implements OnInit {
     this.products.set(this.products().filter((p) => p.id !== product.id));
 
     this.productsApi.deleteProduct(product.id).subscribe({
-      error: () => {
+      error: (err: HttpErrorResponse) => {
         this.products.set(existingProducts);
-        this.errorMessage.set('Delete failed. Product was restored to the list.');
+        this.errorMessage.set(
+          err.status === 403
+            ? 'You are not authorised to delete products'
+            : 'Delete failed. Product was restored to the list.'
+        );
       }
     });
   }
