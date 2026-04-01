@@ -131,9 +131,9 @@
           @if (createdOrder()) {
             <div class="card border mt-4 bg-light">
               <div class="card-body">
-                <h3 class="h6 mb-3">Created order</h3>
+                <h3 class="mb-3">Order created</h3>
                 <p class="mb-1">
-                  <strong>Order ID:</strong> {{ createdOrder()!.id }}
+                  <strong>Order number:</strong> {{ createdOrder()!.id }}
                 </p>
                 <p class="mb-1">
                   <strong>Created:</strong> {{ createdOrder()!.createdAtUtc | date:'short' }}
@@ -183,7 +183,7 @@
 
           <form [formGroup]="retrieveOrderForm" (ngSubmit)="retrieveOrder()">
             <div class="mb-3">
-              <label for="order-id-input" class="form-label">Order ID</label>
+              <label for="order-id-input" class="form-label">Order number</label>
               <input
                 id="order-id-input"
                 type="text"
@@ -204,9 +204,9 @@
           @if (retrievedOrder()) {
             <div class="card border mt-4 bg-light">
               <div class="card-body">
-                <h3 class="h6 mb-3">Retrieved order</h3>
+                <h3 class="mb-3">Order details</h3>
                 <p class="mb-1">
-                  <strong>Order ID:</strong> {{ retrievedOrder()!.id }}
+                  <strong>Order number:</strong> {{ retrievedOrder()!.id }}
                 </p>
                 <p class="mb-1">
                   <strong>Created:</strong> {{ retrievedOrder()!.createdAtUtc | date:'short' }}
