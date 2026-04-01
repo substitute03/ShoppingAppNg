@@ -50,6 +50,4 @@ Safety, Maintainability, and Future-Proofing
 - Dependency injection and a service/repository design reduce coupling and make future changes lower-risk and busniess logic easier to test.
 - API behavior is designed to fail safely with explicit error responses.
 - The current “Created Order” and “Retrieved Order” display sections intentionally share the same layout and are strong candidates for extraction into a reusable OrderDetails component.
-
-Notes
-- This implementation is intentionally lightweight for a take-home demo while still showing design choices that scale toward production patterns.
+- Unit tests are not included in this demo implementation but adding automated tests would be a priority in a production-ready version.
