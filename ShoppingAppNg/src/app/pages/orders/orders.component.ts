@@ -34,7 +34,7 @@ export class OrdersComponent implements OnInit {
   ) {
     this.createOrderForm = this.fb.group({
       forcePaymentFailure: this.fb.nonNullable.control(false),
-      items: this.fb.array([this.createItemGroup()])
+      items: this.fb.array([this.createOrderFormBuilderItems()])
     });
 
     this.retrieveOrderForm = this.fb.group({
@@ -51,7 +51,7 @@ export class OrdersComponent implements OnInit {
   }
 
   addItem(): void {
-    this.orderItemsFormArray.push(this.createItemGroup());
+    this.orderItemsFormArray.push(this.createOrderFormBuilderItems());
   }
 
   removeItem(index: number): void {
@@ -153,7 +153,7 @@ export class OrdersComponent implements OnInit {
     });
   }
 
-  private createItemGroup() {
+  private createOrderFormBuilderItems() {
     return this.fb.group({
       productId: this.fb.nonNullable.control('', [Validators.required]),
       quantity: this.fb.nonNullable.control(1, [Validators.required, Validators.min(1)])
