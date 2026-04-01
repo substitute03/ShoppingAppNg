@@ -15,10 +15,10 @@
 
    ```bash
    dotnet restore
-   dotnet run
+   dotnet run --launch-profile http
    ```
 
-   Or run it as HTTP from Visual Studio
+   **Visual Studio**: open ShoppingAppApi.slnx, set the debug dropdown to the http profile, then run the ShoppingAppApi project.
 
 3. API will run at:
 
