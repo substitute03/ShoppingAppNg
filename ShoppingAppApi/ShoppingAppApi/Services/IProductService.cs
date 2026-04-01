@@ -1,3 +1,4 @@
+using ShoppingAppApi.DataTransferObjects;
 using ShoppingAppApi.Models;
 using ShoppingAppApi.Requests;
 
@@ -5,8 +6,8 @@ namespace ShoppingAppApi.Services;
 
 public interface IProductService
 {
-    IReadOnlyList<Product> GetProducts();
-    Product? GetProductById(Guid id);
-    Product CreateProduct(CreateProductRequest request);
+    IReadOnlyList<ProductDto> GetProducts();
+    ProductDto? GetProductById(Guid id);
+    ProductDto CreateProduct(CreateProductRequest request);
     bool DeleteProduct(Guid id);
 }

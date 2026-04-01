@@ -1,3 +1,4 @@
+using ShoppingAppApi.DataTransferObjects;
 using ShoppingAppApi.Models;
 using ShoppingAppApi.Repositories;
 using ShoppingAppApi.Requests;
@@ -6,19 +7,19 @@ namespace ShoppingAppApi.Services;
 
 public class ProductService(IProductRepository productRepository) : IProductService
 {
-    public IReadOnlyList<Product> GetProducts()
+    public IReadOnlyList<ProductDto> GetProducts()
     {
         return productRepository.GetAll();
     }
 
-    public Product? GetProductById(Guid id)
+    public ProductDto? GetProductById(Guid id)
     {
         return productRepository.GetById(id);
     }
 
-    public Product CreateProduct(CreateProductRequest request)
+    public ProductDto CreateProduct(CreateProductRequest request)
     {
-        Product? existingProduct = productRepository
+        ProductDto? existingProduct = productRepository
             .GetByIdempotencyToken(request.IdempotencyToken);
 
         if (existingProduct != null)

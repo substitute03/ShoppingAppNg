@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using ShoppingAppApi.DataTransferObjects;
 using ShoppingAppApi.Models;
 
 namespace ShoppingAppApi.Repositories;
@@ -19,17 +20,30 @@ public class ProductRepository : IProductRepository
         Products[KeyboardId] = new Product { Id = KeyboardId, Name = "Keyboard", Price = 49.99m };
     }
 
-    public IReadOnlyList<Product> GetAll()
+    public IReadOnlyList<ProductDto> GetAll()
     {
-        return Products.Values.ToList();
+        return Products.Values
+            .Select(p => new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price
+            }).ToList();
     }
 
-    public Product? GetById(Guid id)
+    public ProductDto? GetById(Guid id)
     {
-        return Products.TryGetValue(id, out var product) ? product : null;
+        return Products.Values
+            .Where(p => p.Id == id)
+            .Select(p => new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price
+            }).SingleOrDefault() ?? null;
     }
 
-    public Product? GetByIdempotencyToken(Guid idempotencyToken)
+    public ProductDto? GetByIdempotencyToken(Guid idempotencyToken)
     {
         if (idempotencyToken == Guid.Empty)
         {
@@ -41,10 +55,10 @@ public class ProductRepository : IProductRepository
             return null;
         }
 
-        return Products.TryGetValue(productId, out var product) ? product : null;
+        return GetById(productId);
     }
 
-    public Product Add(Product product)
+    public ProductDto Add(Product product)
     {
         bool isDuplicateProduct =
             (product.Id != Guid.Empty && Products.ContainsKey(product.Id)) ||
@@ -72,7 +86,12 @@ public class ProductRepository : IProductRepository
             ProductIdByIdempotencyToken[product.IdempotencyToken] = newId;
         }
 
-        return productToSave;
+        return new ProductDto
+        {
+            Id = newId,
+            Name = productToSave.Name,
+            Price = productToSave.Price 
+        };
     }
 
     public bool Delete(Guid id)

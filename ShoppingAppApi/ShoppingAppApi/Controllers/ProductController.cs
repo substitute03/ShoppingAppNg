@@ -7,12 +7,17 @@ namespace ShoppingAppApi.Controllers;
 
 [ApiController]
 [Route("api/products")]
-public class ProductController(IProductService productService) : ControllerBase
+public class ProductController(
+    IProductService productService,
+    IUserRoleService userRoleService) : ControllerBase
 {
     [HttpGet]
     public ActionResult<List<ProductDto>> GetProducts()
     {
-        return Ok(productService.GetProducts());
+        var products = productService
+            .GetProducts();
+
+        return Ok(products);
     }
 
     [HttpGet("{id:guid}")]
@@ -25,6 +30,11 @@ public class ProductController(IProductService productService) : ControllerBase
     [HttpPost]
     public ActionResult<ProductDto> CreateProduct([FromBody] CreateProductRequest request)
     {
+        if (!userRoleService.IsAdmin(HttpContext))
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, "Admin role is required.");
+        }
+
         if (string.IsNullOrWhiteSpace(request.Name))
         {
             return BadRequest("Product name is required.");
@@ -53,6 +63,11 @@ public class ProductController(IProductService productService) : ControllerBase
     [HttpDelete("{id:guid}")]
     public IActionResult DeleteProduct(Guid id)
     {
+        if (!userRoleService.IsAdmin(HttpContext))
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, "Admin role is required.");
+        }
+
         return productService.DeleteProduct(id) ? NoContent() : NotFound();
     }
 }
