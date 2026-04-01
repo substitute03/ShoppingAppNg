@@ -23,6 +23,7 @@ export class OrdersComponent implements OnInit {
   readonly createdOrder = signal<Order | null>(null);
   readonly retrievedOrder = signal<Order | null>(null);
   readonly currentOrderIdempotencyToken = signal(crypto.randomUUID());
+  readonly ordersActiveTab = signal<'create' | 'retrieve'>('create');
 
   readonly createOrderForm;
   readonly retrieveOrderForm;
