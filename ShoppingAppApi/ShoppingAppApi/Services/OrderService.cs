@@ -19,6 +19,8 @@ public class OrderService(
             throw new InvalidOperationException("Order already exists");
         }
 
+        ProcessPayment(request.ForcePaymentFailure);
+
         Order orderToSave = MapCreateOrderRequestToOrder(request);
 
         return orderRepository.Add(orderToSave);
@@ -45,5 +47,13 @@ public class OrderService(
         };
         
         return order;
+    }
+
+    private void ProcessPayment(bool forcePaymentFailure)
+    {
+        if (forcePaymentFailure)
+        {
+            throw new InvalidOperationException("Payment failed");
+        }
     }
 }
