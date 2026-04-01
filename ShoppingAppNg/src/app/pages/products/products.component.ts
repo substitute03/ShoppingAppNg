@@ -1,7 +1,6 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { CreateProductRequest, Product } from '../../models/product';
 import { ProductsApiService } from '../../services/products-api.service';
 
@@ -9,7 +8,7 @@ type ProductRow = Product & { isPending?: boolean };
 
 @Component({
   selector: 'app-products',
-  imports: [CommonModule, FormsModule, RouterLink, CurrencyPipe],
+  imports: [CommonModule, FormsModule, CurrencyPipe],
   templateUrl: './products.component.html'
 })
 export class ProductsComponent implements OnInit {

@@ -1,7 +1,6 @@
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { Product } from '../../models/product';
 import { CreateOrderRequest, Order } from '../../models/order';
 import { OrdersApiService } from '../../services/orders-api.service';
@@ -9,7 +8,7 @@ import { ProductsApiService } from '../../services/products-api.service';
 
 @Component({
   selector: 'app-orders',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, DatePipe, CurrencyPipe],
+  imports: [CommonModule, ReactiveFormsModule, DatePipe, CurrencyPipe],
   templateUrl: './orders.component.html'
 })
 export class OrdersComponent implements OnInit {
