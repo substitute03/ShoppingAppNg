@@ -24,15 +24,20 @@
       </a>
     </nav>
     <div class="p-3 border-top mt-auto">
-      <div class="form-check form-switch">
+      <div class="form-check form-switch d-flex align-items-center gap-3">
         <input
           id="app-admin-role-toggle"
-          class="form-check-input"
+          class="form-check-input m-0 flex-shrink-0"
           type="checkbox"
+          style="width: 3.25rem; height: 1.625rem; cursor: pointer"
           [ngModel]="userRoleService.isAdmin()"
           (ngModelChange)="onRoleChanged($event)"
         />
-        <label class="form-check-label small" for="app-admin-role-toggle">
+        <label
+          class="form-check-label fs-6 mb-0 fw-medium"
+          for="app-admin-role-toggle"
+          style="cursor: pointer"
+        >
           {{ userRoleService.isAdmin() ? 'Admin' : 'User' }}
         </label>
       </div>

@@ -1,5 +1,8 @@
 <div class="container py-4">
   <h1 class="h3 mb-3">Orders</h1>
+  <div class="alert alert-info" role="alert">
+    ℹ️ For demo purposes, use the "New Order" button to reset the idempotency token.
+  </div>
 
   <div class="card shadow-sm">
     <div class="card-header bg-white border-bottom-0 pb-0">
@@ -40,7 +43,7 @@
         <div id="orders-pane-create" role="tabpanel" aria-labelledby="orders-tab-create">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="h5 m-0">Create Order</h2>
-            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="startNewOrder()">
+            <button type="button" class="btn btn-outline-primary btn" (click)="startNewOrder()">
               New Order
             </button>
           </div>
@@ -245,7 +248,7 @@
 
   <div class="toast-container position-fixed top-0 end-0 p-3">
     @if (showIdempotencyResetToast()) {
-      <div class="toast show text-bg-success border-0" role="status" aria-live="polite" aria-atomic="true">
+      <div class="toast show text-bg-success border-0" role="status">
         <div class="d-flex">
           <div class="toast-body">
             Idempotency token reset.
