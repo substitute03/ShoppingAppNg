@@ -1,4 +1,4 @@
-# ShoppingApp Take-Home - Technical Notes
+# ShoppingApp - Technical Notes
 
 ## Prerequisites
 
