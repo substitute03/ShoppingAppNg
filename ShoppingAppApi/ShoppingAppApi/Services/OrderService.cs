@@ -2,6 +2,7 @@ using ShoppingAppApi.DataTransferObjects;
 using ShoppingAppApi.Models;
 using ShoppingAppApi.Repositories;
 using ShoppingAppApi.Requests;
+using ShoppingAppApi.Exceptions;
 
 namespace ShoppingAppApi.Services;
 
@@ -16,7 +17,7 @@ public class OrderService(
 
         if (existingOrder != null)
         {
-            throw new InvalidOperationException("Order already exists");
+            throw new ConflictException("Order already exists", errorCode: "order_already_exists");
         }
 
         ProcessPayment(request.ForcePaymentFailure);
@@ -40,7 +41,9 @@ public class OrderService(
                 ProductId = item.ProductId,
                 Quantity = item.Quantity,
                 UnitPrice = productRepository.GetById(item.ProductId)?.Price ??
-                    throw new InvalidOperationException("Product not found")
+                    throw new ResourceNotFoundException(
+                      clientMessage: "Product not found",
+                      errorCode: "product_not_found")
             }).ToList(),
             PaymentSucceeded = !request.ForcePaymentFailure,
             IdempotencyToken = request.IdempotencyToken
@@ -53,7 +56,7 @@ public class OrderService(
     {
         if (forcePaymentFailure)
         {
-            throw new InvalidOperationException("Payment failed");
+            throw new PaymentFailedException();
         }
     }
 }

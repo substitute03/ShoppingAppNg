@@ -108,7 +108,7 @@ export class OrdersComponent implements OnInit {
         this.isCreating.set(false);
       },
       error: (error) => {
-        this.createErrorMessage.set(error?.error ?? 'Could not create order.');
+        this.createErrorMessage.set(error?.error.detail ?? 'Could not create order.');
         this.isCreating.set(false);
       }
     });

@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using ShoppingAppApi.DataTransferObjects;
 using ShoppingAppApi.Models;
+using ShoppingAppApi.Exceptions;
 
 namespace ShoppingAppApi.Repositories;
 
@@ -67,7 +68,9 @@ public class ProductRepository : IProductRepository
 
         if (isDuplicateProduct)
         {
-            throw new InvalidOperationException("Product already exists");
+            throw new ConflictException(
+              "Product already exists",
+              errorCode: "product_already_exists");
         }
 
         var newId = Guid.NewGuid();

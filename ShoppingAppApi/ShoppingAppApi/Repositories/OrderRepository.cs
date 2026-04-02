@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using ShoppingAppApi.Models;
+using ShoppingAppApi.Exceptions;
 
 namespace ShoppingAppApi.Repositories;
 
@@ -17,7 +18,9 @@ public class OrderRepository : IOrderRepository
 
         if (isDuplicateOrder)
         {
-            throw new InvalidOperationException("Order already exists");
+            throw new ConflictException(
+              "Order already exists",
+              errorCode: "order_already_exists");
         }
 
         var newId = Guid.NewGuid();

@@ -2,6 +2,7 @@ using ShoppingAppApi.DataTransferObjects;
 using ShoppingAppApi.Models;
 using ShoppingAppApi.Repositories;
 using ShoppingAppApi.Requests;
+using ShoppingAppApi.Exceptions;
 
 namespace ShoppingAppApi.Services;
 
@@ -24,7 +25,9 @@ public class ProductService(IProductRepository productRepository) : IProductServ
 
         if (existingProduct != null)
         {
-            throw new InvalidOperationException("Product already exists");
+            throw new ConflictException(
+              "Product already exists",
+              errorCode: "product_already_exists");
         }
 
         var productToSave = new Product

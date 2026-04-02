@@ -32,32 +32,34 @@ public class ProductController(
     {
         if (!userRoleService.IsAdmin(HttpContext))
         {
-            return StatusCode(StatusCodes.Status403Forbidden, "Admin role is required.");
+            return Problem(
+                statusCode: StatusCodes.Status403Forbidden,
+                title: "Forbidden",
+                detail: "Admin role is required.");
         }
 
         if (string.IsNullOrWhiteSpace(request.Name))
         {
-            return BadRequest("Product name is required.");
+            return Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Bad Request",
+                detail: "Product name is required.");
         }
 
         if (request.Price <= 0)
         {
-            return BadRequest("Product price must be greater than zero.");
+            return Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Bad Request",
+                detail: "Product price must be greater than zero.");
         }
 
-        try
-        {
-            var createdProduct = productService.CreateProduct(request);
+        var createdProduct = productService.CreateProduct(request);
 
-            return CreatedAtAction(
-                actionName: nameof(GetProductById),
-                routeValues: new { id = createdProduct.Id },
-                value: createdProduct);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        return CreatedAtAction(
+            actionName: nameof(GetProductById),
+            routeValues: new { id = createdProduct.Id },
+            value: createdProduct);
     }
 
     [HttpDelete("{id:guid}")]
@@ -65,7 +67,10 @@ public class ProductController(
     {
         if (!userRoleService.IsAdmin(HttpContext))
         {
-            return StatusCode(StatusCodes.Status403Forbidden, "Admin role is required.");
+            return Problem(
+                statusCode: StatusCodes.Status403Forbidden,
+                title: "Forbidden",
+                detail: "Admin role is required.");
         }
 
         return productService.DeleteProduct(id) ? NoContent() : NotFound();
