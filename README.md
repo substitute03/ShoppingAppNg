@@ -1,4 +1,4 @@
-# ShoppingApp
+# ShoppingAppNg
 
 ## Prerequisites
 
