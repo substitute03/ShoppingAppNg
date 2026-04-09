@@ -49,7 +49,7 @@
 
 - The solution is separated into a .NET API and an Angular frontend, with clear separation between presentation, business logic, and data access responsibilities.
 - The API follows a controller + service + repository structure to keep concerns isolated and make behavior easier to extend and easier to test by using dependency injection.
-- The API uses custom errors which get caught by the middleware so appropriate HTTP error codes are returned and stack trace is preserved.
+- The API uses custom errors which get caught by the middleware so appropriate HTTP error codes are returned.
 - Controllers use appropriate HTTP verbs and status codes, and routes are designed around resource-oriented API endpoints.
   - I would normally prefer a soft delete using PUT but I am actually deleting a resource here so the delete product endpoint is an HTTP delete.
 - Order and product identifiers use GUIDs for simplicity in this in-memory demo and to avoid manual integer ID allocation logic.
